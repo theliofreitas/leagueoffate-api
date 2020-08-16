@@ -6,4 +6,4 @@ obj/
 
 project.lock.json
 
-**/appsettings.Development
+**/appsettings.Development.json
