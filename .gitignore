@@ -5,3 +5,5 @@ bin/
 obj/
 
 project.lock.json
+
+**/appsettings.Development
