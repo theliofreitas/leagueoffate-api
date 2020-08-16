@@ -1,7 +1,7 @@
 .vscode
 
-bin
+bin/
 
-obj
+obj/
 
 project.lock.json
