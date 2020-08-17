@@ -30,6 +30,5 @@ namespace LeagueOfFateApi.Services
     public void Update(string id, Challenge challengeToUpdate) {
       _challenges.ReplaceOne(challenge => challenge.Id == id, challengeToUpdate);
     }
-
   }
 }

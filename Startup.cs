@@ -34,6 +34,8 @@ namespace LeagueOfFateApi
                 sp.GetRequiredService<IOptions<DatabaseSettings>>().Value
             );
             
+            services.AddHttpClient<RiotService>();
+
             services.AddSingleton<ChallengeService>();
             
             services.AddControllers();

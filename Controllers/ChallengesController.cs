@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using LeagueOfFateApi.Services;
 using System.Collections.Generic;
 using LeagueOfFateApi.Models;
+
 
 namespace LeagueOfFateApi.Controllers 
 {
@@ -9,9 +11,11 @@ namespace LeagueOfFateApi.Controllers
   [ApiController]
   public class ChallengesController : ControllerBase {
     private readonly ChallengeService _challengeService;
+    private readonly RiotService _riotService;
 
-    public ChallengesController(ChallengeService challengeService) {
+    public ChallengesController(ChallengeService challengeService, RiotService riotService) {
       _challengeService = challengeService;
+      _riotService = riotService;
     }
 
     [HttpGet]
@@ -31,7 +35,11 @@ namespace LeagueOfFateApi.Controllers
     }
 
     [HttpPost]
-    public ActionResult<Challenge> Create(Challenge challenge) {
+    public async Task<ActionResult<Challenge>> Create(Challenge challenge) {
+      var summonerId = await _riotService.GetSummonerId(challenge.SummonerName);
+
+      challenge.SummonerId = summonerId;
+      challenge.Status = "open";
       _challengeService.Create(challenge);
 
       return CreatedAtRoute("GetChallenge", new { id = challenge.Id.ToString() }, challenge);
