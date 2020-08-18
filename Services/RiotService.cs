@@ -1,11 +1,12 @@
-using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using System.Net.Http;
 
 namespace LeagueOfFateApi.Services
 {
-  public class RiotService {
+  public class RiotService : ControllerBase {
     private readonly IConfiguration _configuration;
     private readonly HttpClient _client;
     private string baseUrl;
@@ -21,13 +22,31 @@ namespace LeagueOfFateApi.Services
       _client = client;
     }
 
-    public async Task<string> GetSummonerId(string summonerName) {
+    public async Task<ActionResult<string>> GetSummonerId(string summonerName) {
       var httpResponse = await _client.GetAsync($"{baseUrl}/summoner/v4/summoners/by-name/{summonerName}");
       var content = await httpResponse.Content.ReadAsStringAsync();
-
-      dynamic responseObject = JToken.Parse(content);
-
-      return responseObject.accountId;
+      
+      if (httpResponse.IsSuccessStatusCode) {
+        var summonerObject = JObject.Parse(content);
+        var summonerId = summonerObject.SelectToken("accountId").Value<string>();
+        return summonerId;
+      }
+      else {
+        switch ((int)httpResponse.StatusCode){
+            case 404:
+              return NotFound(new { 
+                status = "error", 
+                message = "Summoner not found", 
+                instructions = "Please send a valid summonerName"
+              });
+            default:
+              return StatusCode(500, new {
+                status = "error", 
+                message = "Unable to return data from Riot Services", 
+                instructions = "Please try again later"
+              });
+        }
+      }
     }
   }
 }

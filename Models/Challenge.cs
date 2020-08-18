@@ -15,7 +15,7 @@ namespace LeagueOfFateApi.Models
 
     public string Status { get; set; }
 
-    public long MatchId { get; set; }
+    public long? MatchId { get; set; }
     
     public List<Criterial> Criterials { get; set; }
   }

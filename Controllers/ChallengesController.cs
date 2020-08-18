@@ -4,7 +4,6 @@ using LeagueOfFateApi.Services;
 using System.Collections.Generic;
 using LeagueOfFateApi.Models;
 
-
 namespace LeagueOfFateApi.Controllers 
 {
   [Route("api/[controller]")]
@@ -36,10 +35,17 @@ namespace LeagueOfFateApi.Controllers
 
     [HttpPost]
     public async Task<ActionResult<Challenge>> Create(Challenge challenge) {
-      var summonerId = await _riotService.GetSummonerId(challenge.SummonerName);
+      var httpResponse = await _riotService.GetSummonerId(challenge.SummonerName);
 
-      challenge.SummonerId = summonerId;
+      if (httpResponse.Value != null) {
+        challenge.SummonerId = httpResponse.Value;
+      }
+      else {
+        return httpResponse.Result;
+      }
+
       challenge.Status = "open";
+      challenge.MatchId = null;
       _challengeService.Create(challenge);
 
       return CreatedAtRoute("GetChallenge", new { id = challenge.Id.ToString() }, challenge);
