@@ -48,5 +48,15 @@ namespace LeagueOfFateApi.Services
         }
       }
     }
+
+    public async Task<IActionResult> ValidateMatchId(long? matchId) {
+      var httpResponse = await _client.GetAsync($"{baseUrl}/match/v4/matches/{matchId}");
+
+      if (httpResponse.IsSuccessStatusCode){
+        return Ok();
+      }
+
+      return NotFound();
+    }
   }
 }
