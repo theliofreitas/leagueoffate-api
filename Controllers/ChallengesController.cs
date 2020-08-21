@@ -34,8 +34,13 @@ namespace LeagueOfFateApi.Controllers
     }
 
     [HttpPost]
-    public async Task<ActionResult<Challenge>> Create(Challenge challenge) {
-      var httpResponse = await _riotService.GetSummonerId(challenge.SummonerName);
+    public async Task<ActionResult<Challenge>> Create(ChallengeCreateDTO challengeDTO) {
+      var httpResponse = await _riotService.GetSummonerId(challengeDTO.SummonerName);
+
+      Challenge challenge = new Challenge{
+        SummonerName = challengeDTO.SummonerName,
+        Criterials = challengeDTO.Criterials
+      };
 
       if (httpResponse.Value != null) {
         challenge.SummonerId = httpResponse.Value;
@@ -45,10 +50,12 @@ namespace LeagueOfFateApi.Controllers
       }
 
       challenge.Status = "open";
-      challenge.MatchId = null;
       _challengeService.Create(challenge);
 
       return CreatedAtRoute("GetChallenge", new { id = challenge.Id.ToString() }, challenge);
     }
   }
+
+  //[HttpPatch("{id:length(24)}")]
+  //public async Task<IActionResult> Validate(string id, ChallengeValidateDTO challengeDTO) {}
 }
