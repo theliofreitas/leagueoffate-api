@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 namespace LeagueOfFateApi.Models
 {
   public class ChallengeCreateDTO {
-
     [Required]
     public string SummonerName { get; set; }
 

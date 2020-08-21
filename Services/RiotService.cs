@@ -32,31 +32,45 @@ namespace LeagueOfFateApi.Services
         return summonerId;
       }
       else {
-        switch ((int)httpResponse.StatusCode){
-            case 404:
-              return NotFound(new { 
-                status = "error", 
-                message = "Summoner not found", 
-                instructions = "Please send a valid summonerName"
-              });
-            default:
-              return StatusCode(500, new {
-                status = "error", 
-                message = "Unable to return data from Riot Services", 
-                instructions = "Please try again later"
-              });
+        switch ((int)httpResponse.StatusCode) {
+          case 404:
+            return NotFound(new { 
+              status = "error", 
+              message = "Summoner not found", 
+              instructions = "Please send a valid summonerName"
+            });
+          default:
+            return StatusCode(500, new {
+              status = "error", 
+              message = "Unable to return data from Riot Services", 
+              instructions = "Please try again later"
+            });
         }
       }
     }
 
-    public async Task<IActionResult> ValidateMatchId(long? matchId) {
+    public async Task<ActionResult<bool>> ValidateMatchId(long matchId) {
       var httpResponse = await _client.GetAsync($"{baseUrl}/match/v4/matches/{matchId}");
 
-      if (httpResponse.IsSuccessStatusCode){
-        return Ok();
+      if (httpResponse.IsSuccessStatusCode) {
+        return true;
       }
-
-      return NotFound();
+      else {
+        switch ((int)httpResponse.StatusCode) {
+          case 404:
+            return NotFound(new { 
+              status = "error", 
+              message = "Match not found", 
+              instructions = "Please send a valid and completed matchId"
+            });
+          default:
+            return StatusCode(500, new {
+              status = "error", 
+              message = "Unable to return data from Riot Services", 
+              instructions = "Please try again later"
+            });
+        }
+      }
     }
   }
 }

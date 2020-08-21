@@ -54,8 +54,18 @@ namespace LeagueOfFateApi.Controllers
 
       return CreatedAtRoute("GetChallenge", new { id = challenge.Id.ToString() }, challenge);
     }
-  }
+  
+    [HttpPatch("{id:length(24)}")]
+    public async Task<IActionResult> Validate(string id, ChallengeValidateDTO challengeDTO) {
+      var httpResponse = await _riotService.ValidateMatchId(challengeDTO.MatchId);
+      
+      if (!httpResponse.Value) {
+        return httpResponse.Result;
+      }
 
-  //[HttpPatch("{id:length(24)}")]
-  //public async Task<IActionResult> Validate(string id, ChallengeValidateDTO challengeDTO) {}
+      // TODO Validate Criterials
+
+      return NoContent();
+    }
+  }
 }
