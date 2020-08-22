@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System;
+using System.Linq;
 
 namespace LeagueOfFateApi.Models 
 {
@@ -19,8 +20,11 @@ namespace LeagueOfFateApi.Models
           this._Operator = value;
         }
         else {
-         // TODO: throw new Exception
-         this._Operator = null;
+          throw new HttpStatusCodeException(400, new {
+            status = "error",
+            message = "Invalid value in Operator field",
+            instructions = $"Please send one of the following: {string.Join("|", Enum.GetNames(typeof(Operator)).Cast<string>())}"
+          });
         }
       }
     }

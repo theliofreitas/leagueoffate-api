@@ -47,6 +47,10 @@ namespace LeagueOfFateApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseHttpStatusCodeExceptionMiddleware();
+            }
+            else {
+                app.UseHttpStatusCodeExceptionMiddleware();
             }
 
             app.UseHttpsRedirection();
