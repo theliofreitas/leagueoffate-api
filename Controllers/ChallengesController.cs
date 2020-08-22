@@ -63,7 +63,7 @@ namespace LeagueOfFateApi.Controllers
         return httpResponse.Result;
       }
 
-      // TODO Validate Criterials
+      // TODO: Validate Criterials
 
       return NoContent();
     }
