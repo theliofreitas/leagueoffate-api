@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using LeagueOfFateApi.Services;
 using System.Collections.Generic;
 using LeagueOfFateApi.Models;
+using Newtonsoft.Json.Linq;
 
 namespace LeagueOfFateApi.Controllers 
 {
@@ -57,15 +58,41 @@ namespace LeagueOfFateApi.Controllers
   
     [HttpPatch("{id:length(24)}")]
     public async Task<IActionResult> Validate(string id, ChallengeValidateDTO challengeDTO) {
-      var httpResponse = await _riotService.ValidateMatchId(challengeDTO.MatchId);
+      var httpResponse = await _riotService.GetMatchDetails(challengeDTO.MatchId);
       
-      if (!httpResponse.Value) {
+      if (httpResponse.Value == null) {
         return httpResponse.Result;
       }
 
+      JObject matchDetails = httpResponse.Value;
+      Challenge challenge = _challengeService.Get(id);
+
       // TODO: Validate Criterials
+      var test = ValidateCriterials(challenge, matchDetails);
 
       return NoContent();
+    }
+
+    // TODO: Break this code into functions
+    private bool ValidateCriterials(Challenge challenge, JObject matchDetails) {
+      int participantIndex = 0;
+      int allyTeamIndex = 0;
+
+      // Transforming matchDetails into criterial parts
+      JObject match = new JObject();
+      JObject participant = new JObject();
+      JObject allyTeam = new JObject();
+
+      match.Add("match", matchDetails);
+      participant.Add("participant", matchDetails["participants"][participantIndex]);
+      allyTeam.Add("team", matchDetails["teams"][allyTeamIndex]);
+      
+      // Examples
+      var largestKillingSpree = participant.SelectToken("participant.stats.largestKillingSpree");
+      var teamWin = allyTeam.SelectToken("team.win");
+      var gameMode = match.SelectToken("match.gameMode");
+
+      return false;
     }
   }
 }

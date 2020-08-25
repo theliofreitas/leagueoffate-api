@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using System.Net.Http;
+using Newtonsoft.Json.Linq;
 
 namespace LeagueOfFateApi.Services
 {
@@ -49,11 +49,13 @@ namespace LeagueOfFateApi.Services
       }
     }
 
-    public async Task<ActionResult<bool>> ValidateMatchId(long matchId) {
+    public async Task<ActionResult<JObject>> GetMatchDetails(long matchId) {
       var httpResponse = await _client.GetAsync($"{baseUrl}/match/v4/matches/{matchId}");
 
       if (httpResponse.IsSuccessStatusCode) {
-        return true;
+        var content = await httpResponse.Content.ReadAsStringAsync();
+        JObject matchDetails = JObject.Parse(content);
+        return matchDetails;
       }
       else {
         switch ((int)httpResponse.StatusCode) {
