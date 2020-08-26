@@ -28,7 +28,7 @@ namespace LeagueOfFateApi.Services
       
       if (httpResponse.IsSuccessStatusCode) {
         var summonerObject = JObject.Parse(content);
-        var summonerId = summonerObject.SelectToken("accountId").Value<string>();
+        var summonerId = summonerObject.SelectToken("id").Value<string>();
         return summonerId;
       }
       else {
