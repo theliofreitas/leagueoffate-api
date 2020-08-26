@@ -4,6 +4,7 @@ using LeagueOfFateApi.Services;
 using System.Collections.Generic;
 using LeagueOfFateApi.Models;
 using Newtonsoft.Json.Linq;
+using LeagueOfFateApi.Helpers;
 
 namespace LeagueOfFateApi.Controllers 
 {
@@ -73,18 +74,19 @@ namespace LeagueOfFateApi.Controllers
       return NoContent();
     }
 
-    // TODO: Break this code into functions
     private bool ValidateCriterials(Challenge challenge, JObject matchDetails) {
-      int participantIndex = 0;
-      int allyTeamIndex = 0;
-
       // Transforming matchDetails into criterial parts
       JObject match = new JObject();
       JObject participant = new JObject();
       JObject allyTeam = new JObject();
 
+      CriterialsHelper helper = new CriterialsHelper();
+
+      JToken participantData = helper.GetParticipantData(matchDetails, challenge.SummonerId);
+      int allyTeamIndex = 0;
+
       match.Add("match", matchDetails);
-      participant.Add("participant", matchDetails["participants"][participantIndex]);
+      participant.Add("participant", participantData);
       allyTeam.Add("team", matchDetails["teams"][allyTeamIndex]);
       
       // Examples
