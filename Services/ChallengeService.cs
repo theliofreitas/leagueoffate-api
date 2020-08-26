@@ -1,6 +1,6 @@
 using MongoDB.Driver;
-using LeagueOfFateApi.Models;
 using System.Collections.Generic;
+using LeagueOfFateApi.Models;
 
 namespace LeagueOfFateApi.Services
 {

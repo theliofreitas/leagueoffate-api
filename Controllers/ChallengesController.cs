@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using LeagueOfFateApi.Services;
 using System.Collections.Generic;
-using LeagueOfFateApi.Models;
 using Newtonsoft.Json.Linq;
+using LeagueOfFateApi.Models;
+using LeagueOfFateApi.Services;
 using LeagueOfFateApi.Helpers;
 
 namespace LeagueOfFateApi.Controllers 
@@ -83,11 +83,11 @@ namespace LeagueOfFateApi.Controllers
       CriterialsHelper helper = new CriterialsHelper();
 
       JToken participantData = helper.GetParticipantData(matchDetails, challenge.SummonerId);
-      int allyTeamIndex = 0;
+      JToken allyTeamData = helper.GetTeamData(matchDetails, participantData);
 
       match.Add("match", matchDetails);
       participant.Add("participant", participantData);
-      allyTeam.Add("team", matchDetails["teams"][allyTeamIndex]);
+      allyTeam.Add("team", allyTeamData);
       
       // Examples
       var largestKillingSpree = participant.SelectToken("participant.stats.largestKillingSpree");

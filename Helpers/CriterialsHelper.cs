@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json.Linq;
 
 namespace LeagueOfFateApi.Helpers 
@@ -14,6 +15,16 @@ namespace LeagueOfFateApi.Helpers
       );
 
       return participantData;
+    }
+
+    public JToken GetTeamData(JObject matchDetails, JToken participantData) {
+      int allyTeamId = participantData.SelectToken("$.teamId").Value<int>();
+
+      JToken teamData = matchDetails.SelectToken(
+        "$.teams[?(@.teamId == " + allyTeamId + ")]"
+      );
+
+      return teamData;
     }
   }
 }
