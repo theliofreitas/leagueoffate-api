@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using LeagueOfFateApi.Models;
 using LeagueOfFateApi.Services;
@@ -68,33 +69,40 @@ namespace LeagueOfFateApi.Controllers
       JObject matchDetails = httpResponse.Value;
       Challenge challenge = _challengeService.Get(id);
 
-      // TODO: Validate Criterials
-      var test = ValidateCriterials(challenge, matchDetails);
+      challenge.MatchId = challengeDTO.MatchId;
+
+      ValidateCriterials(challenge, matchDetails);
 
       return NoContent();
     }
 
-    private bool ValidateCriterials(Challenge challenge, JObject matchDetails) {
-      // Transforming matchDetails into criterial parts
-      JObject match = new JObject();
-      JObject participant = new JObject();
-      JObject allyTeam = new JObject();
-
+    private void ValidateCriterials(Challenge challenge, JObject matchDetails) {
       CriterialsHelper helper = new CriterialsHelper();
 
       JToken participantData = helper.GetParticipantData(matchDetails, challenge.SummonerId);
       JToken allyTeamData = helper.GetTeamData(matchDetails, participantData);
 
-      match.Add("match", matchDetails);
-      participant.Add("participant", participantData);
-      allyTeam.Add("team", allyTeamData);
-      
-      // Examples
-      var largestKillingSpree = participant.SelectToken("participant.stats.largestKillingSpree");
-      var teamWin = allyTeam.SelectToken("team.win");
-      var gameMode = match.SelectToken("match.gameMode");
+      JObject matchData = new JObject();
 
-      return false;
+      matchData.Add("match", matchDetails);
+      matchData.Add("participant", participantData);
+      matchData.Add("team", allyTeamData);
+      
+      var kills = matchData.SelectToken("participant.stats.kills");
+
+      foreach (Criterial criterial in challenge.Criterials) {
+        criterial.Result = helper.executeValidationLogic(criterial, matchData);
+      }
+
+      bool challengeFailed = challenge.Criterials.Exists(c => c.Result == false);
+
+      if (challengeFailed) {
+        challenge.Status = "failed";
+      } else {
+        challenge.Status = "completed";
+      }
+
+      _challengeService.Update(challenge.Id, challenge);
     }
   }
 }

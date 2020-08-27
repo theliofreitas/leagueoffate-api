@@ -1,4 +1,5 @@
 using System;
+using LeagueOfFateApi.Models;
 using Newtonsoft.Json.Linq;
 
 namespace LeagueOfFateApi.Helpers 
@@ -25,6 +26,32 @@ namespace LeagueOfFateApi.Helpers
       );
 
       return teamData;
+    }
+
+    public bool executeValidationLogic(Criterial criterial, JObject matchData) {
+      if (criterial.Operator == "equal_to") {
+        string matchValue = matchData.SelectToken(criterial.Field).Value<string>().ToLower();
+
+        if (matchValue == criterial.Value) {
+          return true;
+        }
+      }
+      else if (criterial.Operator == "greater_than") {
+        int matchValue = matchData.SelectToken(criterial.Field).Value<int>();
+
+        if (matchValue >= Int32.Parse(criterial.Value)) {
+          return true;
+        }
+      }
+      else if (criterial.Operator == "lower_than") {
+        int matchValue = matchData.SelectToken(criterial.Field).Value<int>();
+
+        if (matchValue <= Int32.Parse(criterial.Value)) {
+          return true;
+        }
+      }
+
+      return false;
     }
   }
 }
