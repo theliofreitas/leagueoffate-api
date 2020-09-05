@@ -14,11 +14,12 @@ namespace LeagueOfFateApi.Services
       _challenges = database.GetCollection<Challenge>(settings.ChallengesCollectionName);
     }
 
-    public List<Challenge> Get() {
-      return _challenges.Find(challenge => true).ToList();
+    public List<Challenge> Get(string filters) {
+      return _challenges.Find(filters).ToList();
+      // return _challenges.Find(challenge => true).ToList();
     }  
 
-    public Challenge Get(string id) {
+    public Challenge GetById(string id) {
       return _challenges.Find<Challenge>(challenge => challenge.Id == id).FirstOrDefault();
     }
 

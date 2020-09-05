@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json.Linq;
 using LeagueOfFateApi.Models;
 using LeagueOfFateApi.Services;
 using LeagueOfFateApi.Helpers;
+using Newtonsoft.Json;
+using System.Linq;
 
 namespace LeagueOfFateApi.Controllers 
 {
@@ -21,13 +22,25 @@ namespace LeagueOfFateApi.Controllers
     }
 
     [HttpGet]
-    public ActionResult<List<Challenge>> Get() {
-      return _challengeService.Get();
+    public ActionResult<List<Challenge>> Get(string summonerName, string status) {
+      dynamic filters = new JObject();
+
+      if (summonerName != null) {
+        filters.SummonerName = summonerName;
+      }
+
+      if (status != null) {
+        filters.Status = status;
+      }
+      
+      var jsonData = JsonConvert.SerializeObject(filters);
+
+      return _challengeService.Get(jsonData);
     }
 
     [HttpGet("{id:length(24)}", Name="GetChallenge")]
     public ActionResult<Challenge> Get(string id) {
-      var challenge = _challengeService.Get(id);
+      var challenge = _challengeService.GetById(id);
 
       if (challenge == null) {
         return NotFound();
@@ -67,7 +80,7 @@ namespace LeagueOfFateApi.Controllers
       }
 
       JObject matchDetails = httpResponse.Value;
-      Challenge challenge = _challengeService.Get(id);
+      Challenge challenge = _challengeService.GetById(id);
 
       challenge.MatchId = challengeDTO.MatchId;
 
