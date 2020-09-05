@@ -16,7 +16,6 @@ namespace LeagueOfFateApi.Services
 
     public List<Challenge> Get(string filters) {
       return _challenges.Find(filters).ToList();
-      // return _challenges.Find(challenge => true).ToList();
     }  
 
     public Challenge GetById(string id) {
