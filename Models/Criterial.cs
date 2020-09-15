@@ -33,6 +33,8 @@ namespace LeagueOfFateApi.Models
     [RegularExpression(@"^[A-Za-z0-9_]*$", ErrorMessage="Please enter a valid value for the 'value' field")]
     public string Value { get; set; }
 
+    public string Description { get; set; }
+
     public bool Result { get; set; }
   }
 
